@@ -1,34 +1,58 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { transfer } from "../../actions/transferActions";
+import { transferTokens } from "../../actions/transferActions";
 import TextFieldGroup from "../common/TextFieldGroup";
+const jwt = require("jsonwebtoken");
 
-import React, { Component } from "react";
-
-export default class Transfer extends Component {
+class Transfer extends Component {
   constructor() {
     super();
     this.state = {
+      from: "",
       to: "",
       amount: "",
+      message: "",
+      password: "",
       errors: {}
     };
     this.onChange = this.onChange.bind(this);
     // this.onSubmit = this.onSubmit.bind(this);
   }
+  componentDidMount() {
+    //this.setState({ from: this.props.auth.user.email });
+    // localStorage
+    // var base64Url = token.split(".")[1];
+    let token = jwt.decode(localStorage["jwtToken"].replace("Bearer ", ""));
+    this.setState({ from: token.email });
+  }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
+  onSubmit(e) {
+    e.preventDefault();
+
+    // alert(JSON.stringify(store.getState()));
+  }
   render() {
+    const { errors } = this.state;
     return (
       <div className="login">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Log In</h1>
-              <p className="lead text-center">Sign in to your Eos account</p>
+              <h1 className="display-4 text-center">Transfer Tokens</h1>
+              <p className="lead text-center">
+                Transfer EOS from one to another
+              </p>
               <form onSubmit={this.onSubmit}>
+                <TextFieldGroup
+                  type="text"
+                  placeholder="From"
+                  name="from"
+                  disabled="disabled"
+                  value={this.state.from}
+                />
                 <TextFieldGroup
                   type="email"
                   placeholder="Send To"
@@ -39,11 +63,27 @@ export default class Transfer extends Component {
                 />
                 <TextFieldGroup
                   type="number"
-                  placeholder="tokens"
+                  placeholder="Tokens"
                   name="amount"
                   value={this.state.amount}
                   onChange={this.onChange}
                   error={errors.amount}
+                />
+                <TextFieldGroup
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={this.state.password}
+                  onChange={this.onChange}
+                  error={errors.password}
+                />
+                <TextFieldGroup
+                  type="text"
+                  placeholder="Message"
+                  name="message"
+                  value={this.state.message}
+                  onChange={this.onChange}
+                  error={errors.message}
                 />
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
@@ -54,5 +94,17 @@ export default class Transfer extends Component {
     );
   }
 }
-
-export default connect(mapStateToProps,{transfer})(Transfer);
+Transfer.propTypes = {
+  transferTokens: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+const mapStateToProps = state => ({
+  auth: state.auth,
+  transfer: state.transfer,
+  errors: state.errors
+});
+export default connect(
+  mapStateToProps,
+  { transferTokens }
+)(Transfer);
