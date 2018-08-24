@@ -1,15 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const validateTransferInput = require("../../validation/transfer");
-const eos = require("./actions/config");
+const config = require("./actions/config");
 const transferAction = require("./actions/transfer.action");
 // @route   GET api/users/Transfer
 // @desc    Transfer Tokens
 // @access  Public
 router.post("/transfer", (req, res) => {
+  const from = req.body.from;
   const to = req.body.to;
   const password = req.body.password;
-  const tokens = req.body.tokens;
+  const amount = req.body.amount;
+  const msg = req.body.message;
   const { errors, isValid } = validateTransferInput(req.body);
   //check Validation
   if (!isValid) {
@@ -22,11 +24,12 @@ router.post("/transfer", (req, res) => {
       errors.to = "User not Found";
       return res.status(404).json(errors);
     }
-    //checl Password
+    //check Password
     bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
-        //user match
-        //create JWT Payload
+        config.then(eos => {
+          transferAction(eos, from, to, amount, msg);
+        });
       } else {
         return res.status(400).json({
           password: "Password Incorrect"

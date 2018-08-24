@@ -3,7 +3,7 @@ const initialState = {
   data: {}
 };
 
-//Register user
+//Transfer Tokens
 export default function(state = initialState, action) {
   switch (action.type) {
     case TRANSFER_DONE:

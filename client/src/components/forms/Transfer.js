@@ -17,12 +17,9 @@ class Transfer extends Component {
       errors: {}
     };
     this.onChange = this.onChange.bind(this);
-    // this.onSubmit = this.onSubmit.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
   componentDidMount() {
-    //this.setState({ from: this.props.auth.user.email });
-    // localStorage
-    // var base64Url = token.split(".")[1];
     let token = jwt.decode(localStorage["jwtToken"].replace("Bearer ", ""));
     this.setState({ from: token.email });
   }
@@ -31,8 +28,14 @@ class Transfer extends Component {
   }
   onSubmit(e) {
     e.preventDefault();
-
-    // alert(JSON.stringify(store.getState()));
+    const data = {
+      from: this.state.from,
+      to: this.state.to,
+      amount: this.state.amount,
+      message: this.state.message,
+      password: this.state.password
+    };
+    this.props.transferTokens(data);
   }
   render() {
     const { errors } = this.state;
