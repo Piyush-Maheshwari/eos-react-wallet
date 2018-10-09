@@ -14,6 +14,7 @@ class Transfer extends Component {
       amount: "",
       message: "",
       password: "",
+      bal: "",
       errors: {}
     };
     this.onChange = this.onChange.bind(this);
